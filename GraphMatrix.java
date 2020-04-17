@@ -1,6 +1,5 @@
 package com.company;
 
-import com.sun.org.apache.xpath.internal.operations.String;
 
 import java.util.HashMap;
 import java.util.PriorityQueue;
@@ -81,21 +80,8 @@ public class GraphMatrix
 
         for (int i = 0; i < vertices.length; i++)
         {
-            String path = "";
+            java.lang.String path = "";
             Vertex current = vertices[i];
-            if (current != vertices[sourceIndex])
-            {
-                path.
-            }
-
-;        }
-
-
-        //Print out path from source to each
-        for (Vertex current : vertices)
-        {
-            String path = "";
-
             if (current != vertices[sourceIndex])
             {
                 path = " - > " + current;
@@ -111,7 +97,11 @@ public class GraphMatrix
                 }
             }
             System.out.println(path);
-        }
+
+;        }
+
+
+
 
     }
 
