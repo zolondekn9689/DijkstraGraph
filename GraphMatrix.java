@@ -4,6 +4,9 @@ package com.company;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
+/**
+ * @author Nick Zolondek
+ */
 public class GraphMatrix
 {
     private Vertex[] vertices;
@@ -21,23 +24,42 @@ public class GraphMatrix
     }
 
 
+    /**
+     *
+     * @param sourceIndex starting index.
+     */
     public void Dijkstra(int sourceIndex)
     {
+        // Using these for easier to read statements.
+        final String _ARROW = " -> ";
+        final String _COMMA = ", ";
+
+        // Vertex source = vertices[sourceIndex]
         Vertex source = vertices[sourceIndex];
+
+        // create PriorityQueue<Vertex> predecessor.
         PriorityQueue<Vertex> Q = new PriorityQueue<>();
+
+        // create a hashmap<vertex, vertex> predecessor.
         HashMap<Vertex, Vertex> predecessor = new HashMap<>();
 
-
+        // for each vertex v in graph:
         for (Vertex v : vertices)
         {
-            int distance = Integer.MAX_VALUE;
-            if (v == vertices[sourceIndex])
+            // dist[v] <- infinity
+            v.setDistance(Integer.MAX_VALUE);
+
+            // if v is source.
+            if (v == source)
             {
-                vertices[sourceIndex].setDistance(0);
+                //set dist[source] = 0;
+                source.setDistance(0);
             }
+            // add v to Q.
             Q.add(v);
         }
 
+        // While Q is not empty do
         while (!Q.isEmpty())
         {
             // Get the min distance and remove it from Q.
@@ -45,10 +67,17 @@ public class GraphMatrix
 
             //Find u index in vertices;
             int uIndex = -1;
+
+            // uIndex <-- index of u in vertices.
             for (int i = 0; i < vertices.length; i++)
-                if (vertices[i]==u) {
+            {
+
+                if (vertices[i]==u)
+                {
                     uIndex = i;
                 }
+            }
+
 
             // For each neighbor V of u do
             for (int v = 0; v < vertices.length; v++)
@@ -56,48 +85,107 @@ public class GraphMatrix
                 // if v still in Q and edge from u to v.
                 if (this.edgeWeights[uIndex][v]>0 && Q.contains(vertices[v]))
                 {
-                    //alt
+                    // alt <-- dist[u] + length(u, v)
                     int alt = u.getDistance() + edgeWeights[uIndex][v];
 
-                    // if alt < dist[v]
+                    // if alt < dist[v]:
                     if (alt < vertices[v].getDistance())
                     {
+                        // remove v from Q.
+                        Q.remove(vertices[v]);
 
-                        Q.remove(v);
+                        // dist[v] <-- alt
                         vertices[v].setDistance(alt);
+
+                        // add v to Q.
                         Q.add(vertices[v]);
-                        predecessor.put(u, vertices[v]);
+
+                        // set u to be predecessor to v.
+                        predecessor.put(vertices[v], u);
 
                     }
 
                 }
             }
 
+        } // end while loop.
+
+        // printing algorithm 2 title.
+        System.out.println("\nDistances from Vertex " + vertices[sourceIndex].getName() + ":");
+
+        //Print out distance to each vertex from the source
+        int j = vertices.length - 1;
+
+        // Keep track of path.
+        String p = "";
+
+        //Current vertex.
+        Vertex cur = vertices[j];
+
+        // cur is not vertex from source index.
+        if (cur != vertices[sourceIndex])
+        {
+            //Set the path.
+            p = "\n" + cur;
+
+            // while predecssor contains key(current)
+            while (predecessor.containsKey(cur))
+            {
+                // Note to self. This affects only the starting index.
+                if (predecessor.get(cur) == source)
+                {
+                    p = predecessor.get(cur).getName() + p;
+                } else {
+                    p = "\n" + predecessor.get(cur) + p;
+                }
+
+                //update current.
+                cur = predecessor.get(cur);
+
+            }
         }
+        System.out.println(p);
+        // End of printing the first printing statement of this algorithm.
 
+        //Title for printing algorithm 3
+        System.out.println("\nShortest paths from Vertex " + vertices[sourceIndex].getName() + ":");
 
-
-
+        //Print out path from source to each vertex.
+        //for each vertex current in vertices.
+        //Note: For loop digs deep the higher the i is.
         for (int i = 0; i < vertices.length; i++)
         {
-            java.lang.String path = "";
+            // String path = "";
+            String path = "";
+
+            // store as the current.
             Vertex current = vertices[i];
+
+            // predecessor contains key (current)
             if (current != vertices[sourceIndex])
             {
-                path = " - > " + current;
+                // The ending index starts here.
+                path = _ARROW + current;
 
+                // while predecssor contains key(current)
                 while (predecessor.containsKey(current))
                 {
-                    if (predecessor.get(current) == source) {
-                        path = predecessor.get(current) + path;
-                    } else {
-                        path = " -> " + predecessor.get(current) + path;
+                    // Note to self: Only the starting index gets ran here.
+                    if (predecessor.get(current) == source)
+                    {
+                        // path = predecessor get current + path.
+                        path = predecessor.get(current).getName() + path;
                     }
+                    else {
+                        // All other indexes get started here.
+                        path = _ARROW + predecessor.get(current) + path;
+                    }
+                    // current = predecessor get current.
                     current = predecessor.get(current);
                 }
             }
+            // print path.
             System.out.println(path);
-
 ;        }
 
 
@@ -107,38 +195,46 @@ public class GraphMatrix
 
     /**
      * toString method.
-     * @return
+     * @return string of the statement.
      */
     @Override
     public String toString()
     {
-        String arrow = " -> ";
-        String comma = ", ";
-        StringBuilder builder = new StringBuilder("Adjacency matrix for graph:\n");
+        // For convinence and easy to read.
+        final String _ARROW = " -> ";
+        final String _COMMA = ", ";
+        final String _TITLE = "Adjacency matrix for graph:\n";
+
+        //Use string builder for quicker appends.
+        StringBuilder statement = new StringBuilder(_TITLE);
 
 
-        // Loop around the edge weights.
-        for (int i = 0; i < edgeWeights.length; i++)
+        // Loop vertexs.
+        for (int vertex = 0; vertex < edgeWeights.length; vertex++)
         {
             // Add the starter vertex.
-            builder.append(vertices[i].getName());
+            statement.append(vertices[vertex].getName());
 
 
             // Loop around the other edges.
-            for (int j = 0; j < edgeWeights[i].length; j++)
+            for (int neighbors = 0; neighbors < edgeWeights[vertex].length; neighbors++)
             {
 
-                // Only add a string if it is not the same vertex.
-                if (i != j)
+                // Avoid similiar repeating vertex index.
+                if (vertex != neighbors)
                 {
-                    builder.append(arrow);
-                    builder.append(vertices[j].getName() + comma + edgeWeights[i][j]);
+                    //Append the line.
+                    statement.append(_ARROW);
+                    statement.append(vertices[neighbors].getName());
+                    statement.append(_COMMA);
+                    statement.append(edgeWeights[vertex][neighbors]);
                 }
             }
-            builder.append("\n");
+            // Add new line for each
+            statement.append("\n");
         }
 
-        //Return the string that had been built.
-        return builder.toString();
+        // Return statement.
+        return statement.toString();
     }
 }

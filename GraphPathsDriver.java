@@ -2,7 +2,7 @@ package com.company;
 
 import java.util.PriorityQueue;
 
-public class Main {
+public class GraphPathsDriver {
 
 
     public static void main(String[] args) {
